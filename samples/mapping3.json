@@ -1,0 +1,18 @@
+{
+  "reverse": true,
+  "__fields": {
+    "entry": {
+      "map": "entry",
+      "__fields": {
+        "items": {
+          "map": "products",
+          "array": true,
+          "__fields": {
+            "name": "title",
+            "quantity#": "stock"
+          }
+        }
+      }
+    }
+  }
+}

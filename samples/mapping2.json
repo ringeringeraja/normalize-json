@@ -1,0 +1,13 @@
+{
+  "strict": true,
+  "__fields": {
+    "name": {
+      "map": "person_name",
+      "default": "serj"
+    },
+    "age": {
+      "map": "person_age",
+      "default": 50
+    }
+  }
+}

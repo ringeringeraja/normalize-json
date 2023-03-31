@@ -1,0 +1,14 @@
+{
+  "entry": {
+    "items": [
+      {
+        "title": "Product name #1",
+        "count": 1
+      },
+      {
+        "title": "Product name #2",
+        "count": 2
+      }
+    ]
+  }
+}
