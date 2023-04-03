@@ -11,8 +11,20 @@ my $e = Common::execute($BINARY);
 
 ok(
   $e->("samples/mapping1.json samples/sample1.json | jq -r '.entry.items[1].title'")
-  eq 'Product name #2'
+  eq 'Product name #2',
+  'normal translation'
 );
 
+ok(
+  $e->("samples/mapping1-reverse.json samples/sample1-reverse.json | jq -r '.shipment.products[1].name'")
+  eq 'Product name #2',
+  'reverse translation'
+);
+
+ok(
+  $e->("samples/mapping2.json samples/sample2.json | jq '.age'")
+  eq '50',
+  'integer casting'
+);
 
 done_testing();

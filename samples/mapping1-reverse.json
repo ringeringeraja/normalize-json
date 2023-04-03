@@ -1,0 +1,21 @@
+{
+  "strict": true,
+  "enforce": true,
+  "default_null": true,
+  "reverse": true,
+  "__fields": {
+    "entry": {
+      "map": "shipment",
+      "__fields": {
+        "items": {
+          "map": "products",
+          "array": true,
+          "__fields": {
+            "title": "name",
+            "count": "quantity"
+          }
+        }
+      }
+    }
+  }
+}

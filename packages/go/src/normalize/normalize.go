@@ -3,6 +3,7 @@ import (
   "fmt"
 )
 
-func Normalize() {
-  fmt.Println("Oi")
+func Normalize(sample interface{}, mapping interface{}) {
+  fmt.Println(sample)
+  fmt.Println(mapping)
 }
