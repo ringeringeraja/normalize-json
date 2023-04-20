@@ -24,6 +24,12 @@ ok(
 ok(
   $e->("samples/mapping2.json samples/sample2.json | jq '.age'")
   eq '50',
+  'default value'
+);
+
+ok(
+  $e->("samples/mapping3.json samples/sample3.json | jq '.entry.products[1].stock'")
+  eq '5',
   'integer casting'
 );
 

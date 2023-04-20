@@ -1,5 +1,6 @@
 {
   "reverse": true,
+  "enforce": true,
   "__fields": {
     "entry": {
       "map": "entry",
@@ -9,7 +10,10 @@
           "array": true,
           "__fields": {
             "name": "title",
-            "quantity#": "stock"
+            "quantity": {
+              "map": "stock",
+              "type": "integer"
+            }
           }
         }
       }

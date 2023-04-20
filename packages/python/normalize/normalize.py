@@ -1,3 +1,4 @@
+import typing
 import re
 import json
 import dateutil.parser as dateparser
@@ -46,9 +47,14 @@ def _normalize_translation_table(obj: dict):
         }
     return table
 
-def serialize(raw: str, mime: str):
+def serialize(raw: dict|str|bytes, mime: typing.Literal['json']):
     if mime == 'json':
-        return raw if type(raw) == dict else json.loads(raw)
+        if isinstance(raw, dict): return raw
+        if isinstance(raw, bytes) or isinstance(raw, str):
+            try:
+                return json.loads(raw)
+            except:
+                raise TypeError('non-serializable string starting with: {}'.format(raw[:20]))
 
 def _flatten(obj, acc:str|None=None, res:dict={}, separator: str='.'):
     if type(obj) == list:
@@ -99,7 +105,7 @@ def translate(obj, table:dict, acc:dict = {}, parent:str|None = None, switches:d
             for _k, _v in filter(lambda x : x[0] != 'type', switches.items()):
                 switches[_k] = v.get(_k, _v)
 
-            required, reverse, default_null, vtype, trim_start, trim_end = (
+            strict, reverse, default_null, vtype, trim_start, trim_end = (
                 switches['strict'],
                 switches['reverse'],
                 switches['default_null'],
@@ -122,14 +128,16 @@ def translate(obj, table:dict, acc:dict = {}, parent:str|None = None, switches:d
 
             mapped_name = v.get('map')
             value = None
+            array_base = None
 
             if mapped_name:
+                array_base = re.compile(r'\[(\w+)?\]\.?').split(mapped_name)
                 for n in (mapped_name if type(mapped_name) is list else mapped_name.split('|')):
                     if not value:
                         mapped_name = n
-                        value = obj.get(n.split('[]')[0])
+                        value = obj.get(array_base[0])
 
-            if '!' in symbols: required=True
+            if '!' in symbols: strict=True
             if '/' in symbols and value: value = value.split(' ')[0]
             if '#' in symbols and value:
                 vtype = 'integer'
@@ -137,20 +145,24 @@ def translate(obj, table:dict, acc:dict = {}, parent:str|None = None, switches:d
 
             # plain value
             if FIELDS_KEY not in v:
-                if type(mapped_name) is str and '[]' in mapped_name:
-                    target = re.compile(r'\[\]\.?').split(mapped_name)
-                    _, field = target
+                if type(mapped_name) is str:
+                    if array_base and len(array_base) == 3:
+                        _, idx, field = array_base
 
-                    if type(ret) != list:
-                        ret = acc.get(parent) \
-                            if type(parent) == object \
-                            else [ {} for _ in range(len(value or [])) ]
+                        if type(ret) != list and idx == None:
+                            ret = acc.get(parent) \
+                                if type(parent) == object \
+                                else [ {} for _ in range(len(value or [])) ]
 
-                    for i, e in enumerate(value or []):
-                        if isinstance(ret, list):
-                            ret[i][k] = e[field]
+                        if idx != None:
+                            if isinstance(value, list) and isinstance(ret, dict):
+                                ret[k] = value[int(idx)][field]
+                            continue
 
-                    continue
+                        for i, e in enumerate(value or []):
+                            if isinstance(ret, list):
+                                ret[i][k] = e[field]
+                        continue
 
                 if mapped_name == '{}':
                     if isinstance(ret, list): ret = [ { **r, k: {} } for r in ret ]
@@ -164,7 +176,7 @@ def translate(obj, table:dict, acc:dict = {}, parent:str|None = None, switches:d
                         value = v.get('default', None)
                         vtype = ts(value)
                     else:
-                        if required: raise ValueError('({}) required value'.format(mapped_name))
+                        if strict: raise ValueError('({}) required value'.format(mapped_name))
                         continue
 
                 if isinstance(value, str):

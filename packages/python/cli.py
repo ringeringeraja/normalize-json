@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import json
-from normalize.normalize import Normalize
+import normalize.normalize as Normalize
 
 def main(argv: list[str]):
     _, mapping, sample, *_ = argv
