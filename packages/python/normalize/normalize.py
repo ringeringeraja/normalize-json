@@ -155,8 +155,11 @@ def translate(obj, table:dict, acc:dict = {}, parent:str|None = None, switches:d
                                 else [ {} for _ in range(len(value or [])) ]
 
                         if idx != None:
+                            idx = int(idx)
                             if isinstance(value, list) and isinstance(ret, dict):
-                                ret[k] = value[int(idx)][field]
+                                ret[k] = value[idx][field] \
+                                    if idx < len(value) \
+                                    else None
                             continue
 
                         for i, e in enumerate(value or []):

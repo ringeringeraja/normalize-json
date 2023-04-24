@@ -1,0 +1,17 @@
+{
+  "enforce": true,
+  "array": true,
+  "__fields": {
+    "name": "name",
+    "code": "skus.data[0].sku",
+    "plans": {
+      "array": true,
+      "__fields": {
+        "name": "skus.data[].title",
+        "code": "skus.data[].sku",
+        "price": "skus.data[].price_sale"
+      }
+    },
+    "image": "images.data[0].medium.url"
+  }
+}

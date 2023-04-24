@@ -9,6 +9,7 @@ def main(argv: list[str]):
         sample = json.loads(f_s.read())
         mapping = json.loads(f_m.read())
 
+        sample = Normalize.flatten(sample)
         result = Normalize.translate(sample, mapping)
         print(json.dumps(result, indent=2))
 
